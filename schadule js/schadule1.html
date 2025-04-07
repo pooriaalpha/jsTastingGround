@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Daily Schedule</title>
+  <style>
+    :root {
+      --primary-color: #4e54c8;
+      --secondary-color: #8f94fb;
+      --accent-color: #ff6b6b;
+      --light-color: #f8f9fa;
+      --dark-color: #343a40;
+      --success-color: #28a745;
+      --math-color: #fd7e14;
+      --coding-color: #6f42c1;
+      --modeling-color: #20c997;
+      --study-color: #17a2b8;
+      --art-color: #e83e8c;
+      --exercise-color: #28a745;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--light-color);
+      color: var(--dark-color);
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--primary-color);
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab.active {
+      border-bottom: 2px solid var(--primary-color);
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    /* Schedule View Styles */
+    .schedule-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+
+    .time-labels {
+      display: flex;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 5px;
+    }
+
+    .time-label {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      color: #777;
+    }
+
+    .schedule-row {
+      display: flex;
+      height: 80px;
+      position: relative;
+    }
+
+    .task-item {
+      position: absolute;
+      height: 70px;
+      border-radius: 8px;
+      padding: 8px;
+      color: white;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .task-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .task-item .time {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .task-item .title {
+      font-weight: bold;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Edit Panel Styles */
+    .edit-panel {
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .tasks-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .task-card {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .color-indicator {
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* Theme Options */
+    .theme-options {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .theme-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .theme-btn.active {
+      transform: scale(1.1);
+      border-color: var(--dark-color);
+    }
+
+    /* Export/Import Section */
+    .export-import {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .tasks-list {
+        grid-template-columns: 1fr;
+      }
+      
+      .schedule-container {
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Daily Schedule Planner</h1>
+    
+    <div class="theme-options">
+      <div class="theme-btn" style="background-color: #4e54c8;" data-theme="default"></div>
+      <div class="theme-btn" style="background-color: #00b894;" data-theme="mint"></div>
+      <div class="theme-btn" style="background-color: #ff7675;" data-theme="coral"></div>
+      <div class="theme-btn" style="background-color: #6c5ce7;" data-theme="lavender"></div>
+      <div class="theme-btn" style="background-color: #2d3436;" data-theme="dark"></div>
+    </div>
+    
+    <div class="tabs">
+      <div class="tab active" data-tab="schedule">Schedule View</div>
+      <div class="tab" data-tab="edit">Edit Tasks</div>
+    </div>
+    
+    <div class="panel active" id="schedule-panel">
+      <div class="schedule-container">
+        <div class="time-labels">
+          <div class="time-label">6 AM</div>
+          <div class="time-label">8 AM</div>
+          <div class="time-label">10 AM</div>
+          <div class="time-label">12 PM</div>
+          <div class="time-label">2 PM</div>
+          <div class="time-label">4 PM</div>
+          <div class="time-label">6 PM</div>
+          <div class="time-label">8 PM</div>
+          <div class="time-label">10 PM</div>
+        </div>
+        <div class="schedule-row"></div>
+      </div>
+    </div>
+    
+    <div class="panel" id="edit-panel">
+      <div class="tasks-list"></div>
+      
+      <button class="btn btn-primary" id="add-task-btn">Add New Task</button>
+      
+      <div id="edit-form" style="display: none; margin-top: 20px;">
+        <h3 id="form-title">Add New Task</h3>
+        <div class="form-group">
+          <label for="task-title">Title</label>
+          <input type="text" id="task-title" placeholder="Task Title">
+        </div>
+        <div class="form-group">
+          <label for="task-start">Start Time</label>
+          <input type="time" id="task-start">
+        </div>
+        <div class="form-group">
+          <label for="task-duration">Duration (minutes)</label>
+          <input type="number" id="task-duration" min="15" step="15" value="60">
+        </div>
+        <div class="form-group">
+          <label for="task-color">Category</label>
+          <select id="task-color">
+            <option value="var(--exercise-color)">Exercise</option>
+            <option value="var(--math-color)">Math</option>
+            <option value="var(--coding-color)">Coding</option>
+            <option value="var(--modeling-color)">3D Modeling</option>
+            <option value="var(--study-color)">University Study</option>
+            <option value="var(--art-color)">Art</option>
+          </select>
+        </div>
+        <div class="buttons">
+          <button class="btn btn-danger" id="cancel-btn">Cancel</button>
+          <button class="btn btn-primary" id="save-task-btn">Save Task</button>
+        </div>
+      </div>
+      
+      <div class="export-import">
+        <button class="btn btn-primary" id="export-btn">Export Schedule</button>
+        <button class="btn btn-primary" id="import-btn">Import Schedule</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initial data with your recommended schedule
+    let tasks = [
+      { id: 1, title: 'Exercise', startTime: '07:00', duration: 30, color: 'var(--exercise-color)' },
+      { id: 2, title: 'Math', startTime: '08:00', duration: 60, color: 'var(--math-color)' },
+      { id: 3, title: 'University Study', startTime: '12:00', duration: 60, color: 'var(--study-color)' },
+      { id: 4, title: 'Coding', startTime: '14:00', duration: 90, color: 'var(--coding-color)' },
+      { id: 5, title: '3D Modeling', startTime: '16:00', duration: 60, color: 'var(--modeling-color)' },
+      { id: 6, title: 'Art', startTime: '19:00', duration: 60, color: 'var(--art-color)' }
+    ];
+    
+    let editingTaskId = null;
+    
+    // Theme configurations
+    const themes = {
+      default: {
+        primaryColor: '#4e54c8',
+        secondaryColor: '#8f94fb',
+        accentColor: '#ff6b6b',
+        mathColor: '#fd7e14',
+        codingColor: '#6f42c1',
+        modelingColor: '#20c997',
+        studyColor: '#17a2b8',
+        artColor: '#e83e8c',
+        exerciseColor: '#28a745'
+      },
+      mint: {
+        primaryColor: '#00b894',
+        secondaryColor: '#55efc4',
+        accentColor: '#00cec9',
+        mathColor: '#fdcb6e',
+        codingColor: '#0984e3',
+        modelingColor: '#55efc4',
+        studyColor: '#74b9ff',
+        artColor: '#ff7675',
+        exerciseColor: '#00b894'
+      },
+      coral: {
+        primaryColor: '#ff7675',
+        secondaryColor: '#fab1a0',
+        accentColor: '#fdcb6e',
+        mathColor: '#e17055',
+        codingColor: '#d63031',
+        modelingColor: '#fdcb6e',
+        studyColor: '#e84393',
+        artColor: '#fd79a8',
+        exerciseColor: '#00b894'
+      },
+      lavender: {
+        primaryColor: '#6c5ce7',
+        secondaryColor: '#a29bfe',
+        accentColor: '#fd79a8',
+        mathColor: '#e84393',
+        codingColor: '#6c5ce7',
+        modelingColor: '#00b894',
+        studyColor: '#a29bfe',
+        artColor: '#fd79a8',
+        exerciseColor: '#55efc4'
+      },
+      dark: {
+        primaryColor: '#2d3436',
+        secondaryColor: '#636e72',
+        accentColor: '#dfe6e9',
+        mathColor: '#fdcb6e',
+        codingColor: '#74b9ff',
+        modelingColor: '#55efc4',
+        studyColor: '#a29bfe',
+        artColor: '#fd79a8',
+        exerciseColor: '#55efc4'
+      }
+    };
+    
+    // Tab switching
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        
+        tab.classList.add('active');
+        document.getElementById(`${tab.dataset.tab}-panel`).classList.add('active');
+        
+        if (tab.dataset.tab === 'schedule') {
+          renderSchedule();
+        } else if (tab.dataset.tab === 'edit') {
+          renderTasksList();
+        }
+      });
+    });
+    
+    // Theme switching
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        const theme = themes[btn.dataset.theme];
+        document.documentElement.style.setProperty('--primary-color', theme.primaryColor);
+        document.documentElement.style.setProperty('--secondary-color', theme.secondaryColor);
+        document.documentElement.style.setProperty('--accent-color', theme.accentColor);
+        document.documentElement.style.setProperty('--math-color', theme.mathColor);
+        document.documentElement.style.setProperty('--coding-color', theme.codingColor);
+        document.documentElement.style.setProperty('--modeling-color', theme.modelingColor);
+        document.documentElement.style.setProperty('--study-color', theme.studyColor);
+        document.documentElement.style.setProperty('--art-color', theme.artColor);
+        document.documentElement.style.setProperty('--exercise-color', theme.exerciseColor);
+        
+        renderSchedule();
+        renderTasksList();
+      });
+    });
+    
+    // Set default theme active
+    document.querySelector('.theme-btn[data-theme="default"]').classList.add('active');
+    
+    // Add task button
+    document.getElementById('add-task-btn').addEventListener('click', () => {
+      editingTaskId = null;
+      document.getElementById('form-title').textContent = 'Add New Task';
+      document.getElementById('task-title').value = '';
+      document.getElementById('task-start').value = '08:00';
+      document.getElementById('task-duration').value = '60';
+      document.getElementById('task-color').value = 'var(--exercise-color)';
+      document.getElementById('edit-form').style.display = 'block';
+      document.getElementById('add-task-btn').style.display = 'none';
+    });
+    
+    // Cancel button
+    document.getElementById('cancel-btn').addEventListener('click', () => {
+      document.getElementById('edit-form').style.display = 'none';
+      document.getElementById('add-task-btn').style.display = 'block';
+    });
+    
+    // Save task button
+    document.getElementById('save-task-btn').addEventListener('click', () => {
+      const title = document.getElementById('task-title').value;
+      const startTime = document.getElementById('task-start').value;
+      const duration = parseInt(document.getElementById('task-duration').value);
+      const color = document.getElementById('task-color').value;
+      
+      if (!title || !startTime || !duration) {
+        alert('Please fill in all fields');
+        return;
+      }
+      
+      if (editingTaskId) {
+        // Update existing task
+        const taskIndex = tasks.findIndex(t => t.id === editingTaskId);
+        if (taskIndex !== -1) {
+          tasks[taskIndex] = {
+            ...tasks[taskIndex],
+            title,
+            startTime,
+            duration,
+            color
+          };
+        }
+      } else {
+        // Add new task
+        const newId = Math.max(0, ...tasks.map(t => t.id)) + 1;
+        tasks.push({
+          id: newId,
+          title,
+          startTime,
+          duration,
+          color
+        });
+      }
+      
+      document.getElementById('edit-form').style.display = 'none';
+      document.getElementById('add-task-btn').style.display = 'block';
+      
+      renderTasksList();
+      renderSchedule();
+      
+      // Save to localStorage
+      saveToLocalStorage();
+    });
+    
+    // Export button
+    document.getElementById('export-btn').addEventListener('click', () => {
+      const dataStr = JSON.stringify(tasks);
+      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+      
+      const exportFileDefaultName = 'schedule-export.json';
+      
+      const linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.click();
+    });
+    
+    // Import button
+    document.getElementById('import-btn').addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      
+      input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = event => {
+          try {
+            const importedTasks = JSON.parse(event.target.result);
+            if (Array.isArray(importedTasks)) {
+              tasks = importedTasks;
+              renderTasksList();
+              renderSchedule();
+              saveToLocalStorage();
+              alert('Schedule imported successfully!');
+            } else {
+              throw new Error('Invalid format');
+            }
+          } catch (error) {
+            alert('Error importing file. Please make sure it\'s a valid schedule export.');
+          }
+        };
+        
+        reader.readAsText(file);
+      };
+      
+      input.click();
+    });
+    
+    // Render schedule view
+    function renderSchedule() {
+      const scheduleRow = document.querySelector('.schedule-row');
+      scheduleRow.innerHTML = '';
+      
+      const totalMinutes = 16 * 60; // 6am to 10pm = 16 hours
+      const containerWidth = scheduleRow.clientWidth;
+      
+      tasks.forEach(task => {
+        const [hours, minutes] = task.startTime.split(':').map(Number);
+        const startMinutesSinceSix = (hours - 6) * 60 + minutes;
+        
+        if (startMinutesSinceSix < 0 || startMinutesSinceSix > totalMinutes) {
+          return; // Skip tasks outside our time range
+        }
+        
+        const startPercentage = (startMinutesSinceSix / totalMinutes) * 100;
+        const widthPercentage = (task.duration / totalMinutes) * 100;
+        
+        const taskElement = document.createElement('div');
+        taskElement.className = 'task-item';
+        taskElement.style.backgroundColor = task.color;
+        taskElement.style.left = `${startPercentage}%`;
+        taskElement.style.width = `${widthPercentage}%`;
+        
+        // Format time for display
+        const startHour = Math.floor(hours);
+        const startMinute = minutes;
+        const endHour = Math.floor((startHour + (startMinute + task.duration) / 60) % 24);
+        const endMinute = (startMinute + task.duration) % 60;
+        
+        const formattedStartTime = `${startHour}:${startMinute.toString().padStart(2, '0')}`;
+        const formattedEndTime = `${endHour}:${endMinute.toString().padStart(2, '0')}`;
+        
+        taskElement.innerHTML = `
+          <div class="title">${task.title}</div>
+          <div class="time">${formattedStartTime} - ${formattedEndTime}</div>
+        `;
+        
+        taskElement.addEventListener('click', () => {
+          // Switch to edit tab and load this task for editing
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+          
+          document.querySelector('.tab[data-tab="edit"]').classList.add('active');
+          document.getElementById('edit-panel').classList.add('active');
+          
+          editTask(task.id);
+        });
+        
+        scheduleRow.appendChild(taskElement);
+      });
+    }
+    
+    // Render tasks list for editing
+    function renderTasksList() {
+      const tasksList = document.querySelector('.tasks-list');
+      tasksList.innerHTML = '';
+      
+      tasks.sort((a, b) => {
+        return a.startTime.localeCompare(b.startTime);
+      }).forEach(task => {
+        const taskCard = document.createElement('div');
+        taskCard.className = 'task-card';
+        taskCard.style.borderLeftColor = task.color;
+        
+        const [hours, minutes] = task.startTime.split(':').map(Number);
+        const endHour = Math.floor((hours + (minutes + task.duration) / 60) % 24);
+        const endMinute = (minutes + task.duration) % 60;
+        
+        const formattedStartTime = `${hours}:${minutes.toString().padStart(2, '0')}`;
+        const formattedEndTime = `${endHour}:${endMinute.toString().padStart(2, '0')}`;
+        
+        taskCard.innerHTML = `
+          <div><span class="color-indicator" style="background-color: ${task.color}"></span><strong>${task.title}</strong></div>
+          <div>Time: ${formattedStartTime} - ${formattedEndTime}</div>
+          <div>Duration: ${task.duration} minutes</div>
+          <div class="buttons" style="margin-top: 10px;">
+            <button class="btn btn-primary edit-btn" data-id="${task.id}">Edit</button>
+            <button class="btn btn-danger delete-btn" data-id="${task.id}">Delete</button>
+          </div>
+        `;
+        
+        tasksList.appendChild(taskCard);
+      });
+      
+      // Add event listeners to edit and delete buttons
+      document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          editTask(parseInt(btn.dataset.id));
+        });
+      });
+      
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          deleteTask(parseInt(btn.dataset.id));
+        });
+      });
+    }
+    
+    // Edit task
+    function editTask(id) {
+      const task = tasks.find(t => t.id === id);
+      if (!task) return;
+      
+      editingTaskId = id;
+      document.getElementById('form-title').textContent = 'Edit Task';
+      document.getElementById('task-title').value = task.title;
+      document.getElementById('task-start').value = task.startTime;
+      document.getElementById('task-duration').value = task.duration;
+      document.getElementById('task-color').value = task.color;
+      document.getElementById('edit-form').style.display = 'block';
+      document.getElementById('add-task-btn').style.display = 'none';
+    }
+    
+    // Delete task
+    function deleteTask(id) {
+      if (confirm('Are you sure you want to delete this task?')) {
+        tasks = tasks.filter(t => t.id !== id);
+        renderTasksList();
+        renderSchedule();
+        saveToLocalStorage();
+      }
+    }
+    
+    // Save to localStorage
+    function saveToLocalStorage() {
+      localStorage.setItem('scheduleTasks', JSON.stringify(tasks));
+    }
+    
+    // Load from localStorage
+    function loadFromLocalStorage() {
+      const savedTasks = localStorage.getItem('scheduleTasks');
+      if (savedTasks) {
+        try {
+          tasks = JSON.parse(savedTasks);
+        } catch (e) {
+          console.error('Error loading saved tasks', e);
+        }
+      }
+    }
+    
+    // Initialize
+    function init() {
+      loadFromLocalStorage();
+      renderSchedule();
+      renderTasksList();
+    }
+    
+    // Run initialization
+    init();
+  </script>
+</body>
+</html>

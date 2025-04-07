@@ -1,0 +1,122 @@
+.game-container {
+    width: 600px;
+    margin: 0 auto;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+.score-board {
+    font-size: 24px;
+    margin: 20px 0;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 20px auto;
+    width: 450px;
+}
+
+.hole {
+    width: 140px;
+    height: 140px;
+    /* background: #6B4423; */
+    background: linear-gradient(10deg, rgb(170, 91, 0) 0%, rgb(214, 214, 214) 100%);
+    /* border: 4px dotted salmon; */
+    /* border: 1px solid #0d2527; */
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+}
+
+.mole {
+    width: 100%;
+    height: 100%;
+    background: #8B4513;
+    border-radius: 50%;
+    position: absolute;
+    top: 100%;
+    transition: top 0.3s;
+    cursor: pointer;
+}
+
+.mole.active {
+    top: 0;
+}
+
+.mole::before {
+    content: '';
+    position: absolute;
+    width: 80%;
+    height: 50%;
+    background: #A0522D;
+    border-radius: 50%;
+    top: 20%;
+    left: 10%;
+}
+
+.mole::after {
+    content: '•  •';
+    position: absolute;
+    font-size: 24px;
+    color: black;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+button {
+    font-size: 18px;
+    padding: 10px 20px;
+    margin: 20px 10px;
+    cursor: pointer;
+    background: #4CAF50;
+    border: none;
+    color: white;
+    border-radius: 5px;
+}
+
+button:hover {
+    background: #45a049;
+}
+
+.game-over {
+    display: none;
+    font-size: 24px;
+    color: red;
+    margin: 40px 0;
+    font-weight: bold;    
+}
+
+.reset-button {
+    margin-top: 56px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #313131;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.reset-button:hover {
+    background-color: #1d1d1d;
+}
+
+/* Back Button */
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: #444;
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.back-button:hover {
+    background: #666;
+}

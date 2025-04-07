@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whac-A-Mole Game</title>
+    <link rel="stylesheet" href="Whac-A-Molestyles.css">
+
+</head>
+<body>
+<a href="D:\Codeher\Port01\test.html#portfolio" class="back-button">← Back</a>
+<div class="game-container">
+    <h1>Whac-A-Mole!</h1>
+    <div class="score-board">Score: <span id="score">0</span></div>
+    <div class="score-board">Time: <span id="time">30</span>s</div>
+    <div class="grid">
+        <div class="hole"><div class="mole"></div></div>
+        <div class="hole"><div class="mole"></div></div>
+        <div class="hole"><div class="mole"></div></div>
+        <div class="hole"><div class="mole"></div></div>
+        <div class="hole"><div class="mole"></div></div>
+        <div class="hole"><div class="mole"></div></div>
+        <div class="hole"><div class="mole"></div></div>
+        <div class="hole"><div class="mole"></div></div>
+        <div class="hole"><div class="mole"></div></div>
+    </div>
+
+    <div id="gameOver" class="game-over">Game Over!</div>
+    <button id="startButton">Start Game</button>
+
+</div>
+    <button class="reset-button" onclick="resetGame()">Reset Game</button>
+
+</div>
+<script src="Whac-A-Molescript.js"></script>
+</body>
+</html>

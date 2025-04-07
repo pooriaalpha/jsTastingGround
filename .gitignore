@@ -1,0 +1,20 @@
+# Ignore all log files
+*.log
+
+# Ignore node_modules (for Node.js projects)
+node_modules/
+
+# Ignore environment config files
+.env
+
+# Ignore build or dist folders
+build/
+dist/
+
+# Ignore personal notes
+notes.txt
+
+test.html - Shortcut.lnk
+
+cal p  js/c/
+tests.py

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Daily Schedule</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+        }
+        .schedule {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .activity {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .math { background: #FFD700; }
+        .exercise { background: #FF6347; }
+        .coding { background: #4682B4; }
+        .studying { background: #32CD32; }
+        .modeling { background: #8A2BE2; }
+        .art { background: #FF69B4; }
+        .time {
+            font-weight: bold;
+        }
+        input[type="text"] {
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            text-align: center;
+            width: 50%;
+        }
+    </style>
+</head>
+<body>
+    <h2>Interactive Daily Schedule</h2>
+    <div class="schedule" id="schedule">
+        <div class="activity math"><span class="time">08:00 - 08:30</span> <input type="text" value="Math"></div>
+        <div class="activity exercise"><span class="time">08:30 - 09:00</span> <input type="text" value="Exercise"></div>
+        <div class="activity coding"><span class="time">12:00 - 01:00</span> <input type="text" value="Coding"></div>
+        <div class="activity studying"><span class="time">01:00 - 01:30</span> <input type="text" value="Studying"></div>
+        <div class="activity modeling"><span class="time">06:00 - 06:30</span> <input type="text" value="3D Modeling"></div>
+        <div class="activity art"><span class="time">06:30 - 07:30</span> <input type="text" value="Art"></div>
+    </div>
+    <script>
+        document.querySelectorAll('input[type="text"]').forEach(input => {
+            input.addEventListener('input', function() {
+                localStorage.setItem(this.previousElementSibling.textContent, this.value);
+            });
+            const savedValue = localStorage.getItem(input.previousElementSibling.textContent);
+            if (savedValue) {
+                input.value = savedValue;
+            }
+        });
+    </script>
+</body>
+</html>
